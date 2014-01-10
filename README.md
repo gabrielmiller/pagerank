@@ -10,13 +10,13 @@ Pagerank is an algorithm that, in short, analyzes the connections between nodes 
     pagerank = pagerank.New()
 
     // Add each node to the graph
-    pagerank.addNode(nodeId)
+    pagerank.AddNode(nodeId)
 
     // Create 1-directional links between nodes
-    pagerank.addLink(originNodeId, targetNodeId)
+    pagerank.AddLink(originNodeId, targetNodeId)
 
     // Calculate the pagerank for a single node
-    pagerankForNode = pagerank.calculateSingle(damping, iterations, node)
+    pagerankForNode = pagerank.CalculateSingle(damping, iterations, node)
 
     // Calculate the pagerank for every node in the graph
-    pagerankArray = pagerank.calculateFull(damping, iterations)
+    pagerankArray = pagerank.CalculateFull(damping, iterations)
