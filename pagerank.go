@@ -6,7 +6,7 @@ const (
 
 type Pagerank struct {
     Nodes       map[int]Node
-    ids         map[string]int
+    Ids         map[string]int
 }
 
 type Node struct {
@@ -15,8 +15,13 @@ type Node struct {
     pagerank    map[int]float64
 }
 
-func New() *Pagerank {
-    return new(Pagerank)
+func New() Pagerank {
+    nodes := make(map[int]Node)
+    ids := make(map[string]int)
+    return Pagerank{
+        nodes,
+        ids,
+    }
 }
 
 func (p *Pagerank) CalculatePagerank(iterations int) {
@@ -26,7 +31,6 @@ func (p *Pagerank) CalculatePagerank(iterations int) {
         for _, id := range node.out {
             _, exists := p.Nodes[id]
             if exists {
-                //p.Nodes[id].in = append(p.Nodes[id].in, id)
                 p.Nodes[id].appendInlink(id)
             }
         }
@@ -41,7 +45,7 @@ func (p *Pagerank) CalculatePagerank(iterations int) {
 }
 
 // Add a node to the pagerank graph
-func (p *Pagerank) AddNode(id string, links map[string]string) {
+func (p *Pagerank) AddNode(id string, links []string) {
 
     // register this node's id
     identifier := p.register(id)
@@ -54,13 +58,13 @@ func (p *Pagerank) AddNode(id string, links map[string]string) {
         out = append(out, p.register(id))
     }
 
-    rankmap := make(map[int]float64)
-    rankmap[0] = 1 // At the 0th iteration each node has a rank of 1
+    pageranks := make(map[int]float64)
+    pageranks[0] = 1.0 // At the 0th iteration each node has a rank of 1
 
     node := Node{
         out,
         in,
-        rankmap,
+        pageranks,
     }
 
     p.Nodes[identifier] = node
@@ -70,14 +74,14 @@ func (p *Pagerank) AddNode(id string, links map[string]string) {
 func (p *Pagerank) register(id string) (identifier int){
 
     // if id exists in p.ids, use the existing integer for the identifier
-    identifier, exists := p.ids[id]
+    identifier, exists := p.Ids[id]
     if exists {
         return identifier
     }
 
     // if id does not exist in p.ids, map the id to len(ids)+1 and use that
-    newid := len(p.ids) + 1
-    p.ids[id] = newid
+    newid := len(p.Ids) + 1
+    p.Ids[id] = newid
     return newid
 }
 
