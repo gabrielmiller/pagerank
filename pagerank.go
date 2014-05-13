@@ -5,7 +5,7 @@ const (
 )
 
 type Pagerank struct {
-    Nodes       map[int]Node
+    Nodes       map[int]*Node
     Ids         map[string]int
 }
 
@@ -15,13 +15,14 @@ type Node struct {
     pagerank    map[int]float64
 }
 
-func New() Pagerank {
-    nodes := make(map[int]Node)
+func New() *Pagerank {
+    nodes := make(map[int]*Node)
     ids := make(map[string]int)
-    return Pagerank{
+    p := Pagerank{
         nodes,
         ids,
     }
+    return &p
 }
 
 func (p *Pagerank) CalculatePagerank(iterations int) {
@@ -36,16 +37,16 @@ func (p *Pagerank) CalculatePagerank(iterations int) {
         }
     }
 
-    for i := 0; i > iterations; i++ {
+    for i := 1; i < iterations+1; i++ {
         for _, node := range p.Nodes {
             // calculate pagerank for individual node
-            node.rank(i, *p)
+            node.rank(i, p)
         }
     }
 }
 
 // Add a node to the pagerank graph
-func (p *Pagerank) AddNode(id string, links []string) {
+func (p Pagerank) AddNode(id string, links []string) {
 
     // register this node's id
     identifier := p.register(id)
@@ -67,7 +68,7 @@ func (p *Pagerank) AddNode(id string, links []string) {
         pageranks,
     }
 
-    p.Nodes[identifier] = node
+    p.Nodes[identifier] = &node
 }
 
 // Return the identifying int for a string within p.ids
@@ -85,16 +86,24 @@ func (p *Pagerank) register(id string) (identifier int){
     return newid
 }
 
-func (n Node) appendInlink (id int) {
+func (n *Node) diff(iteration int) float64 {
+    return n.pagerank[iteration] / float64(len(n.in))
+}
+
+func (n *Node) appendInlink (id int) {
     n.in = append(n.in, id)
 }
 
 // calculate the rank for a single node
-func (n *Node) rank(iteration int, p Pagerank) float64 {
+func (n Node) rank(iteration int, p *Pagerank) {
     i := iteration - 1
-    sums := 0.0
-    for id := range n.in {
-        sums += p.Nodes[id].pagerank[i] / float64(len(p.Nodes[id].in))
+    sum := float64(0)
+    for _, id := range n.in {
+        rank := float64(p.Nodes[id].pagerank[i])
+        length := float64(len(p.Nodes[id].in))
+        partial := rank/length
+        sum += partial
     }
-    return (1 - DF) + (DF * sums)
+    score := (1.0 - DF) + (DF * sum)
+    n.pagerank[i+1] = score
 }
