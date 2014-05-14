@@ -28,11 +28,11 @@ func New() *Pagerank {
 func (p *Pagerank) CalculatePagerank(iterations int) {
 
     // create inbound id lookups for each node
-    for _, node := range p.Nodes {
+    for outId, node := range p.Nodes {
         for _, id := range node.out {
             _, exists := p.Nodes[id]
             if exists {
-                p.Nodes[id].appendInlink(id)
+                p.Nodes[id].appendInlink(outId)
             }
         }
     }
@@ -86,10 +86,6 @@ func (p *Pagerank) register(id string) (identifier int){
     return newid
 }
 
-func (n *Node) diff(iteration int) float64 {
-    return n.pagerank[iteration] / float64(len(n.in))
-}
-
 func (n *Node) appendInlink (id int) {
     n.in = append(n.in, id)
 }
@@ -100,7 +96,7 @@ func (n Node) rank(iteration int, p *Pagerank) {
     sum := float64(0)
     for _, id := range n.in {
         rank := float64(p.Nodes[id].pagerank[i])
-        length := float64(len(p.Nodes[id].in))
+        length := float64(len(p.Nodes[id].out))
         partial := rank/length
         sum += partial
     }
