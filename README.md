@@ -7,16 +7,19 @@ Pagerank is an algorithm that, in short, analyzes the connections between nodes 
 
     import "github.com/gmiller2007/pagerank"
     
-    pagerank = pagerank.New()
+    p := pagerank.New()
 
-    // Add each node to the graph
-    pagerank.AddNode(nodeId)
+    // Add each node to the graph and point it toward its outbound nodes
+    p.AddNode("identifier1", []string{'identifier2', 'identifier3'})
 
-    // Create 1-directional links between nodes
-    pagerank.AddLink(originNodeId, targetNodeId)
+    // Calculate a given number of iterations of pagerank
+    p.CalculatePagerank(3)
 
-    // Calculate the pagerank for a single node
-    pagerankForNode = pagerank.CalculateSingle(damping, iterations, node)
+    // Look up an identifier's id
+    id := p.Ids[identifier]
 
-    // Calculate the pagerank for every node in the graph
-    pagerankArray = pagerank.CalculateFull(damping, iterations)
+    // Look up the pagerank for an identifier
+    pagerankArray := p.Nodes[id].Pagerank
+
+    // Look up the pagerank at a specific iteration for an identifier
+    pagerankArray := p.Nodes[id].Pagerank[iteration]

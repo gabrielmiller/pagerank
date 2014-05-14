@@ -12,7 +12,7 @@ type Pagerank struct {
 type Node struct {
     out         []int
     in          []int
-    pagerank    map[int]float64
+    Pagerank    map[int]float64
 }
 
 func New() *Pagerank {
@@ -95,11 +95,11 @@ func (n Node) rank(iteration int, p *Pagerank) {
     i := iteration - 1
     sum := float64(0)
     for _, id := range n.in {
-        rank := float64(p.Nodes[id].pagerank[i])
+        rank := float64(p.Nodes[id].Pagerank[i])
         length := float64(len(p.Nodes[id].out))
         partial := rank/length
         sum += partial
     }
     score := (1.0 - DF) + (DF * sum)
-    n.pagerank[i+1] = score
+    n.Pagerank[i+1] = score
 }
